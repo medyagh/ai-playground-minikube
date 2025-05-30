@@ -1,14 +1,41 @@
-### Instructions
+# Instructions
+
+Build the image:
+
+```console
+make
 ```
-minikube start -d krunkit 
+
+Push the image to the registry:
+
+```console
+make push
+```
+
+Start the cluster:
+
+```console
+minikube start -d krunkit
 kubectl apply -f daemon.yaml
-
-minikube docker-env
-docker build -t local/d1 .
-
 kubectl apply -f demo.yaml
-kubectl logs vulkan-demo
+```
 
-##### the vulkan_minimal_compute is a clone of https://github.com/Erkaman/vulkan_minimal_compute except enableValidationLayers = false in main.cpp
- ```
+Check that the GPU is detected in the demo container:
 
+```console
+% kubectl exec pod/vulkan-demo -it -- vulkaninfo --summary | grep GPU
+GPU0:
+    deviceType         = PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
+    deviceName         = Virtio-GPU Venus (Apple M2 Max)
+GPU1:
+```
+
+Run the demo program:
+
+```console
+% kubectl exec pod/vulkan-demo -- sh -c 'time /vulkan_minimal_compute'
+
+real    0m0.355s
+user    0m0.314s
+sys     0m0.016s
+```

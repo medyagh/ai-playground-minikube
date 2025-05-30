@@ -1,29 +1,33 @@
-FROM ubuntu:22.04 AS builder
+# Build container based on
+# https://podman-desktop.io/docs/podman/gpu
 
-# Install Vulkan headers and dev tools
-RUN apt-get update && \
-    apt-get install -y git cmake build-essential libvulkan1 libgl1-mesa-dev libvulkan-dev
+FROM fedora:42 as builder
 
-# Copy local source folder into the image
-## I changed one line in the source code in main.cpp 
-## const bool enableValidationLayers = false;
+RUN dnf -y install \
+        cmake \
+        g++ \
+        git \
+        glslc \
+        make \
+        mesa-vulkan-drivers \
+        vulkan-headers \
+        vulkan-loader \
+        vulkan-loader-devel \
+        vulkan-tools
+
 COPY ./vulkan_minimal_compute /vulkan-demo
 WORKDIR /vulkan-demo
-RUN cmake . && make
+RUN cmake -DCMAKE_BUILD_TYPE=Release . \
+    && make
 
-# --- Runtime container ---
-FROM ubuntu:22.04
+# Runtime container based on
+# https://sinrega.org/2024-03-06-enabling-containers-gpu-macos/
 
-# Install Vulkan loader (runtime)
-RUN apt-get update && apt-get install -y libvulkan1
-RUN apt-get update && apt-get install -y \
-    libvulkan1 \
-    libvulkan-dev \
-    vulkan-validationlayers \
-    mesa-vulkan-drivers \
-    && rm -rf /var/lib/apt/lists/*
+FROM quay.io/slopezpa/fedora-vgpu
 
-# Copy binary from builder
 COPY --from=builder /vulkan-demo/vulkan_minimal_compute /vulkan_minimal_compute
+
+# Shaders are accesssed in runtime
+COPY ./vulkan_minimal_compute/shaders /shaders
 
 CMD ["/vulkan_minimal_compute"]

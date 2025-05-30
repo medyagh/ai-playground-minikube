@@ -1,0 +1,3 @@
+[submodule "macos/vulkan_minimal_compute"]
+	path = macos/vulkan_minimal_compute
+	url = https://github.com/Erkaman/vulkan_minimal_compute

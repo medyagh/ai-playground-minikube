@@ -6,21 +6,8 @@ metadata:
 spec:
   containers:
   - name: vulkan-demo
-    image: local/d1
-    imagePullPolicy: Never
-    command: ["/vulkan_minimal_compute"]
-    env:
-    - name: VK_INSTANCE_LAYERS
-      value: ""
+    image: quay.io/nirsof/vulkan-demo:v1
+    command: ["sh", "-c" , "trap 'exit 0' TERM; while true; do sleep 60 & wait; done"]
     resources:
       limits:
         squat.ai/dri: 1
-    volumeMounts:
-    - mountPath: /dev
-      name: dev
-    securityContext:
-      privileged: true
-  volumes:
-  - name: dev
-    hostPath:
-      path: /dev
