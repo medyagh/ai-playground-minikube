@@ -1,7 +1,7 @@
 REGISTRY = quay.io
 USER = nirsof
 IMAGE = vulkan-demo
-TAG = v1
+TAG = v2
 TOOL = podman
 
 image_url = $(REGISTRY)/$(USER)/$(IMAGE):$(TAG)
