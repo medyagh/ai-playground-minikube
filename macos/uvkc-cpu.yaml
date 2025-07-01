@@ -6,5 +6,5 @@ metadata:
 spec:
   containers:
   - name: uvkc
-    image: quay.io/nirsof/uvkc:v1
+    image: quay.io/nirsof/uvkc:v2
     command: ["sh", "-c" , "trap 'exit 0' TERM; while true; do sleep 60 & wait; done"]
